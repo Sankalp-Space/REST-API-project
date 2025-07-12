@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Sankalp-Space/REST-API-project/internal/config"
+	"github.com/Sankalp-Space/REST-API-project/internal/http/handlers/student"
 )
 
 func main() {
@@ -24,9 +25,7 @@ func main() {
 	//setup router
 	router:=http.NewServeMux()
 
-	router.HandleFunc("GET /",func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to the Students API"))
-	})
+	router.HandleFunc("POST /api/students",student.New()) // Assuming you have a student package with a New function that returns an http.HandlerFun
 
 	//setup server
 	server:=http.Server {
