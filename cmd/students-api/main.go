@@ -13,19 +13,26 @@ import (
 
 	"github.com/Sankalp-Space/REST-API-project/internal/config"
 	"github.com/Sankalp-Space/REST-API-project/internal/http/handlers/student"
+	"github.com/Sankalp-Space/REST-API-project/internal/storage/sqlite"
 )
 
 func main() {
 	//load config
 	cfg:= config.MustLoad()
 
+	 storage ,err:=sqlite.New(cfg)
+	 if err!=nil{
+		log.Fatal(err)
+	 }
+
+	 slog.Info("storage initialized", slog.String("env",cfg.Env),slog.String("version","1.0.0"))
 
 	//database connection
 
 	//setup router
 	router:=http.NewServeMux()
 
-	router.HandleFunc("POST /api/students",student.New()) // Assuming you have a student package with a New function that returns an http.HandlerFun
+	router.HandleFunc("POST /api/students",student.New(storage)) // Assuming you have a student package with a New function that returns an http.HandlerFun
 
 	//setup server
 	server:=http.Server {
@@ -52,10 +59,12 @@ func main() {
 
 	defer cancel();
 	
-	err:=server.Shutdown(ctx);
+	err=server.Shutdown(ctx);
 	if err != nil {
 		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
 	}
+
+	
 	slog.Info("server shutdown gracefully") 
 
 }

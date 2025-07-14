@@ -8,12 +8,14 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/Sankalp-Space/REST-API-project/internal/storage"
 	"github.com/Sankalp-Space/REST-API-project/internal/types"
 	"github.com/Sankalp-Space/REST-API-project/internal/utils/response"
 	"github.com/go-playground/validator/v10"
+	
 )
 
-func New() http.HandlerFunc {
+func New(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var student types.Student
@@ -37,6 +39,17 @@ func New() http.HandlerFunc {
 			return
 		}
 
-		response.WriteJson(w, http.StatusCreated, map[string]string{"success": "OK"})
+		lastId, err := store.CreateStudent(
+			student.Name,
+			student.Email,
+			student.Age,
+		)
+		slog.Info("User created successfull",slog.String("userId",fmt.Sprint(lastId)))
+
+		if err != nil {
+			response.WriteJson(w, http.StatusCreated, map[string]int64{"id": lastId})
+		}
+
+		response.WriteJson(w, http.StatusCreated, map[string]int64{"id": lastId})
 	}
 }
