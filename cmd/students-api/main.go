@@ -32,8 +32,8 @@ func main() {
 	//setup router
 	router:=http.NewServeMux()
 
-	router.HandleFunc("POST /api/students",student.New(storage)) // Assuming you have a student package with a New function that returns an http.HandlerFun
-
+	router.HandleFunc("POST /api/students",student.New(storage)) 
+	router.HandleFunc("GET /api/students/{id}",student.GetById(storage))
 	//setup server
 	server:=http.Server {
 		Addr: cfg.HTTPServer.Addr,
